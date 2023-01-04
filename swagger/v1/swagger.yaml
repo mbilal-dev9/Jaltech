@@ -1,0 +1,690 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/people/:id":
+    patch:
+      summary: Update user information
+      tags:
+      - people
+      description: user personal information form
+      parameters:
+      - name: access-token
+        in: header
+        schema:
+          type: string
+      - name: client
+        in: header
+        schema:
+          type: string
+      - name: uid
+        in: header
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Personal Information Save Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 82d46f27-d392-4962-b040-620be7b3ef84
+                      first_name:
+                        type: string
+                        example: First name
+                      last_name:
+                        type: string
+                        example: Last name
+                      phone_no:
+                        type: string
+                        example: Phone Number
+                      title:
+                        type: string
+                        example: Title
+                      residential_status:
+                        type: string
+                        example: citizen
+                      nationality:
+                        type: string
+                        example: test
+                      country_of_birth:
+                        type: string
+                        example: USA
+                      place_of_birth:
+                        type: string
+                        example: NY
+                      rsa_number:
+                        type: string
+                        example: 81 874 2235
+                      foreign_id:
+                        type: string
+                        example: '1234'
+                      sa_tax_number:
+                        type: string
+                        example: "+27 81 874 2235"
+                      occupation:
+                        type: string
+                        example: test
+                      job_title:
+                        type: string
+                        example: job title
+                      employer:
+                        type: string
+                        example: test
+                      employment_nature:
+                        type: string
+                        example: test
+                      previous_employment:
+                        type: string
+                        example: test
+                required:
+                - status
+                - code
+                - data
+        '422':
+          description: Entered Information is not processable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  code:
+                    type: integer
+                    example: 422
+                required:
+                - status
+                - code
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    example: You need to sign in or sign up before continuing.
+                required:
+                - errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - first_name
+              - last_name
+              - title
+              - nationality
+              - country_of_birth
+              - place_of_birth
+              - rsa_number
+              - sa_tax_number
+              - email
+              - phone_no
+              properties:
+                first_name:
+                  type: string
+                  example: First Name
+                last_name:
+                  type: string
+                  example: Last Name
+                title:
+                  type: string
+                  example: Title
+                nationality:
+                  type: string
+                  example: Nationality
+                country_of_birth:
+                  type: string
+                  example: Country of Birth
+                place_of_birth:
+                  type: string
+                  example: Place of Birth
+                rsa_number:
+                  type: string
+                  example: Rsa Number
+                email:
+                  type: string
+                  example: email@example.com
+                phone_no:
+                  type: string
+                  example: Phone Number
+                employer:
+                  type: string
+                  example: Employer
+                occupation:
+                  type: string
+                  example: Occupation
+                employment_nature:
+                  type: string
+                  example: Employment Nature
+                job_title:
+                  type: string
+                  example: Job Title
+                previous_employment:
+                  type: string
+                  example: Previous Employment
+                occupation_jurisdiction:
+                  type: string
+                  example: Occupation Jurisdiction
+  "/api/v1/products":
+    get:
+      summary: Fetch products
+      tags:
+      - products
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 82d46f27-d392-4962-b040-620be7b3ef84
+                        name:
+                          type: string
+                          example: Bitcoin Debenture
+                        description:
+                          type: string
+                          example: Long description
+                        category:
+                          type: string
+                          example: cryptocurrency
+                      required:
+                      - id
+                      - name
+                      - description
+                      - category
+  "/api/v1/products/{id}":
+    get:
+      summary: Fetch product
+      tags:
+      - products
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 82d46f27-d392-4962-b040-620be7b3ef84
+                      name:
+                        type: string
+                        example: Bitcoin Debenture
+                      description:
+                        type: string
+                        example: Long description
+                      category:
+                        type: string
+                        example: cryptocurrency
+                    required:
+                    - id
+                    - name
+                    - description
+                    - category
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Record not found
+                  code:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: error
+                required:
+                - error
+                - code
+                - status
+  "/api/v1/auth/password":
+    post:
+      summary: Send password reset URL
+      tags:
+      - authentication
+      description: Email's user password reset link
+      parameters: []
+      responses:
+        '200':
+          description: reset password request sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: An email has been sent to 'email@example.com' containing
+                      instructions for resetting your password.
+                required:
+                - success
+                - message
+        '404':
+          description: User with provided email not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    example: Unable to find user with email 'email@example.com'.
+                required:
+                - errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  nullable: false
+                  example: email@example.com
+    put:
+      summary: Update password through reset URL
+      tags:
+      - authentication
+      description: Update password if reset_password_token is valid
+      parameters: []
+      responses:
+        '200':
+          description: Reset password request sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: password successfully updated.
+                required:
+                - success
+                - message
+        '401':
+          description: User with provided reset_password_token not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    example:
+                    - Unauthorized
+                required:
+                - errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - reset_password_token
+              - password
+              - password_confirmation
+              properties:
+                reset_password_token:
+                  type: string
+                  nullable: false
+                  example: 2t9efJGbbExzGD8K3CqK
+                password:
+                  type: string
+                  nullable: false
+                  example: Password123
+                password_confirmation:
+                  type: string
+                  nullable: false
+                  example: Password123
+    patch:
+      summary: Change password through old password for authenticated users
+      tags:
+      - authentication
+      description: Change password if old password is correct and user is logged in
+      parameters:
+      - name: access-token
+        in: header
+        schema:
+          type: string
+      - name: client
+        in: header
+        schema:
+          type: string
+      - name: uid
+        in: header
+        schema:
+          type: string
+      responses:
+        '200':
+          description: password successfully updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: password successfully updated.
+                required:
+                - success
+                - message
+        '422':
+          description: Old password is incorrect
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: object
+                    example:
+                      current_password:
+                      - is invalid
+                      full_messages:
+                      - Current password is invalid
+                required:
+                - errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - current_password
+              - password
+              - password_confirmation
+              properties:
+                current_password:
+                  type: string
+                  nullable: false
+                  example: Password1
+                password:
+                  type: string
+                  nullable: false
+                  example: Password123
+                password_confirmation:
+                  type: string
+                  nullable: false
+                  example: Password123
+  "/api/v1/auth":
+    post:
+      summary: User registration
+      tags:
+      - authentication
+      description: Creates a user with given profile
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: string
+                    example: 808c5be88684aa4a11566205
+                required:
+                - status
+                - data
+        '422':
+          description: Validation error (ie. password is not valid)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        example:
+                        - has already been taken
+                      base:
+                        type: array
+                        example:
+                        - has too many profiles attributes
+                  code:
+                    type: integer
+                    example: 422
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  nullable: false
+                  example: email@example.com
+                password:
+                  type: string
+                  nullable: false
+                  example: Password1
+                password_confirmation:
+                  type: string
+                  nullable: false
+                  example: Password1
+                user_type:
+                  type: string
+                  nullable: false
+                  example: Investor/Advisor/Company
+                profile_attributes:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Company name
+                    company_name:
+                      type: string
+                      example: Company name
+                    person_attributes:
+                      type: object
+                      properties:
+                        first_name:
+                          type: string
+                          example: First name
+                        last_name:
+                          type: string
+                          example: Last name
+              required:
+              - email
+              - password
+              - password_confirmation
+  "/api/v1/auth/sign_in":
+    post:
+      summary: Log in
+      tags:
+      - authentication
+      parameters: []
+      responses:
+        '200':
+          description: User logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 82d46f27-d392-4962-b040-620be7b3ef84
+                      email:
+                        type: string
+                        example: test@example.com
+                      user_type:
+                        type: string
+                        example: advisor
+                      provider:
+                        type: string
+                        example: email
+                      uid:
+                        type: string
+                        example: test@example.com
+                      allow_password_change:
+                        type: boolean
+                        example: false
+                    required:
+                    - id
+                    - email
+                    - user_type
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - errors
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Invalid login credentials. Please try again.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - password
+              properties:
+                email:
+                  type: string
+                  example: test@example.com
+                password:
+                  type: string
+  "/api/v1/auth/sign_out":
+    delete:
+      summary: Log out
+      tags:
+      - authentication
+      description: Invalidates currently active bearer token
+      parameters:
+      - name: access-token
+        in: header
+        schema:
+          type: string
+      - name: client
+        in: header
+        schema:
+          type: string
+      - name: uid
+        in: header
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success - user logged off
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Error - user not logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - errors
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                      example: User was not found or was not logged in.
+servers:
+- url: https://jaltech-backend-staging.herokuapp.com
+- url: http://jaltech-backend-staging.herokuapp.com
+- url: http://localhost:3000

@@ -1,0 +1,24 @@
+---
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  username: <%= ENV["POSTGRES_USER"] || "postgres" %>
+  password: <%= ENV["POSTGRES_PASSWORD"] || "postgres" %>
+  host: <%= ENV["DATABASE_HOST"] %>
+  pool: <%= [5, *ENV.values_at("RAILS_MAX_THREADS", "SIDEKIQ_CONCURRENCY")].map(&:to_i).max %>
+
+development:
+  <<: *default
+  database: jaltech_backend_development
+
+test:
+  <<: *default
+  database: jaltech_backend_test
+
+production:
+  <<: *default
+  database: jaltech_backend_production
+
+staging:
+  <<: *default
+  database: jaltech_backend_staging

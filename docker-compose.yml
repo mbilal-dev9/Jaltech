@@ -1,0 +1,64 @@
+version: "3.9"
+
+x-backend: &backend
+  # The root directory from which we're building.
+  build: .
+  volumes:
+    - .:/app:cached
+    - rails_cache:/app/tmp/cache
+    - app_gems:/usr/local/bundle
+  # Specify that this container depends on the other containers
+  depends_on:
+    - db
+    - redis
+  # Specify environment variables used in this container.
+  env_file:
+    - .env
+
+services:
+  app:
+    <<: *backend
+    # The command to be run when we run "docker-compose up".
+    command: sh -c "rm -f tmp/pids/server.pid && bin/rails s -p 3000 -b '0.0.0.0'"
+    ports:
+      - "3000:3000" # rails applications
+    depends_on:
+      - sidekiq
+
+  sidekiq:
+    <<: *backend
+    command: bundle exec sidekiq -C config/sidekiq.yml
+
+  setup:
+    <<: *backend
+    command:
+      - sh
+      - -c
+      - |
+        bin/setup
+
+  db:
+    image: postgres:14.5
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "9432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+  redis:
+    image: redis:7.0.4-alpine
+    volumes:
+      - redis:/data
+    ports:
+      - "9379:6379"
+    healthcheck:
+      test: redis-cli ping
+      interval: 5s
+volumes:
+  rails_cache:
+  app_gems:
+  db:
+  redis:

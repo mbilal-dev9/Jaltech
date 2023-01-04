@@ -1,0 +1,162 @@
+name: Rails build and test
+
+on: push
+
+env:
+  RAILS_ENV: test
+  DATABASE_URL: postgres://postgres:password@127.0.0.1:5432
+  APPLICATION_HOST: localhost:3000
+  AWS_REGION: eu-west-1
+jobs:
+  documentation:
+    name: Generate documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        id: ruby-install
+        uses: ./.github/actions/ruby_setup
+
+      - name: Generate documentation
+        run: bin/yard doc
+
+  audit:
+    name: Audit gems
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        id: ruby-install
+        uses: ./.github/actions/ruby_setup
+
+      - name: Run audit
+        run: bin/bundle-audit check --update
+
+  brakeman:
+    name: Run security scanner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        id: ruby-install
+        uses: ./.github/actions/ruby_setup
+
+      - name: Run security scanner
+        run: bin/brakeman -q -w2
+
+  lint:
+    name: Lint changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        id: ruby-install
+        uses: ./.github/actions/ruby_setup
+
+      - name: Run Linter
+        run: bin/rubocop
+
+  verify_seeds:
+    name: Verify seeds
+    runs-on: ubuntu-latest
+
+    services:
+      posgres:
+        image: postgres:13.5
+        env:
+          POSTGRES_PASSWORD: password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        id: ruby-install
+        uses: ./.github/actions/ruby_setup
+
+      - name: Setup database
+        run: bin/rails db:create db:schema:load
+
+      - name: Verify seeds
+        run: bin/rails db:seed
+
+  verify_migrations:
+    name: Verify migrations
+    runs-on: ubuntu-latest
+
+    services:
+      posgres:
+        image: postgres:13.5
+        env:
+          POSTGRES_PASSWORD: password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        id: ruby-install
+        uses: ./.github/actions/ruby_setup
+
+      - name: Setup database
+        run: bin/rails db:create db:schema:load
+
+      - name: Verify migrations
+        run: bin/rails db:migrate
+
+      - name: Check if schema is up to date
+        run: git diff --quiet HEAD
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    services:
+      posgres:
+        image: postgres:13.5
+        env:
+          POSTGRES_PASSWORD: password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        id: ruby-install
+        uses: ./.github/actions/ruby_setup
+
+      - name: Setup database
+        run: bin/rails db:create db:schema:load
+
+      - name: Run tests
+        run: bin/rspec --format progress
