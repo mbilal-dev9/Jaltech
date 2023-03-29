@@ -245,7 +245,7 @@ GEM
       ast (~> 2.4.1)
     pg (1.4.3)
     public_suffix (5.0.0)
-    puma (5.6.5)
+    puma (6.2.0)
       nio4r (~> 2.0)
     racc (1.6.0)
     rack (2.2.4)
@@ -421,7 +421,7 @@ DEPENDENCIES
   lefthook (~> 1.0, >= 1.0.5)
   money-rails (~> 1.15)
   pg (~> 1.1)
-  puma (~> 5.0)
+  puma (~> 6.2)
   rack-cors
   rails (~> 7.0.3, >= 7.0.3.1)
   rspec-rails (~> 5.1, >= 5.1.2)
