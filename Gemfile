@@ -10,7 +10,7 @@ gem "rails", "~> 7.0.3", ">= 7.0.3.1"
 gem "pg", "~> 1.1"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 5.0"
+gem "puma", "~> 6.2"
 
 gem "rswag-api", "~> 2.5", ">= 2.5.1"
 gem "rswag-ui", "~> 2.5", ">= 2.5.1"
